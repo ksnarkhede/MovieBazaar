@@ -53,7 +53,8 @@ public class Movie {
     }
     public void displayShowTimings(){
         for(int i=1;i<=showTimings.size();i++){
-            System.out.println("     "+(i)+". Time: "+showTimings.get(i).timeString);
+//            System.out.println("     "+(i)+"."+Movie_title);
+            System.out.println("     "+" "+(i)+".  Time: "+showTimings.get(i).timeString);
             System.out.println("     "+" "+"  price: "+showTimings.get(i).eventprice);
         }
 
