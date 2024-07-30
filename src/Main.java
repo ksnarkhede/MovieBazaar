@@ -34,93 +34,34 @@ public class Main {
             movieList.get(i).displayShowTimings();
         }
     }
-    public boolean movieSelection(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Seat Reservation------->");
-        display();
-        boolean action_status = true;
-        System.out.println("------------------------------------------------");
-        System.out.print("Select Movie using Index: ");
-        int movie_choice=sc.nextInt();
-        if (movieList.get(movie_choice).checkHouseFull()) {
-            System.out.println("Movie HouseFull");
-            action_status = false;
-
+    public void paymentConfirmation(int movieChoice,int timingChoice,String seats[]){
+        Scanner sc=new Scanner(System.in);
+        int numseats = seats.length;
+        System.out.println("------------------------------------------------------");
+        System.out.println("Amount to be paid");
+        System.out.println("₹ " + movieList.get(movieChoice).showTimings.get(timingChoice).eventprice * numseats);
+        System.out.println("------------------------------------------------------");
+        System.out.println("Confirm Payment: 1-->Yes 2-->No");
+        int payChoice = sc.nextInt();
+        System.out.println("------------------------------------------------------");
+        if (payChoice == 1) {
+            Arrays.stream(seats).forEach((seat) -> {
+                int x = seat.charAt(0) - 'A';
+                String s1 = seat.substring(1);
+                int y = Integer.parseInt(s1) - 1;
+                movieList.get(movieChoice).showTimings.get(timingChoice).seatMatrix.setxy(x, y);
+            });
+            movieList.get(movieChoice).showTimings.get(timingChoice).seatMatrix.showMatrix();
+            System.out.println("------------------------------------------------------");
+            System.out.println("Ticket Booked Successfully");
+            System.out.println("------------------------------------------------------");
+        } else {
+            System.out.println("Payment Cancelled by user");
         }
-        movieList.get(movie_choice).displayShowTimings();
-        System.out.println("------------------------------------------------");
-        int multiplier=action_status?1:-1;
-        return timingSelection(movie_choice,action_status);
-
     }
-    public  boolean timingSelection (int movie_choice,boolean action_status){
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Choose the movie time using index: ");
-        int timingchoice = sc.nextInt();
-
-        movieList.get(movie_choice).showTimings.get(timingchoice).checkHouseFull();
-
-        movieList.get(movie_choice).showTimings.get(timingchoice).seatMatrix.showMatrix();
-        if (movieList.get(movie_choice).showTimings.get(timingchoice).seatMatrix.allBook()) {
-            System.out.println("Oops HouseFull!!\nPlease Choose Another Timings");
-            action_status = false;
-
-        }
-        int multiplier=action_status?1:-1;
-        return seatSelection(movie_choice,timingchoice,action_status);
-    }
-    public boolean seatSelection(int movie_choice,int timingchoice,boolean action_status){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("------------------------------------------------");
-        boolean seatvalid = true;
-        String[] seats;
-        do {
-            seatvalid = true;
-            System.out.println("Please enter seat by comma seperated (A1,A2,A3)");
-            String seat_string = sc.next();
-            seats = seat_string.split(",");
-            for (String seat : seats) {
-                seatvalid = seatvalid && TimeValidator.isValidSeat(seat);
-            }
-            System.out.println(seatvalid);
-            if (!seatvalid) {
-                System.out.println("Re-enter the seat again (Follow format)");
-//                            action_status=false;
-            }
-        } while (!seatvalid);
-        return seatAvailiabilty(seats,movie_choice,timingchoice,action_status);
-    }
-    public boolean seatAvailiabilty(String[] seats,int movie_choice,int timingchoice,boolean action_status) {
-        for (int i = 0; i < seats.length; i++) {
-            int x = seats[i].charAt(0) - 'A';
-            String s1 = seats[i].substring(1);
-            int y = Integer.parseInt(s1) - 1;
-            if (movieList.get(movie_choice).showTimings.get(timingchoice).seatMatrix.isset(x, y)) {
-                action_status = false;
-                System.out.println("------------------------------------------------------");
-                System.out.println("Seat " + seats[i] + " is not available");
-                System.out.println("------------------------------------------------------");
-                return false;
-            }
-        }
-        return true;
-    }
-
     public void adminFuncion(){
         int ch;
         Scanner sc = new Scanner(System.in);
-        boolean isLogin=false;
-        do{
-            System.out.println(" -- Enter Admin Password -- ");
-            String adminPassword="adminpass";
-            String inputPassword=sc.next();
-            if(inputPassword.equals(adminPassword)){
-                isLogin=true;
-            }
-            else{
-                System.out.println("Password is incorrect!! Re-enter Password");
-            }
-        }while(!isLogin);
         do {
             try {
                 System.out.println("-------------------------Menu-------------------------");
@@ -134,7 +75,6 @@ public class Main {
 
                 switch (ch) {
                     case 1:
-
                         System.out.println("------------------------------------------------------");
                         System.out.print("Enter Movie Name: ");
                         String movieTitle = sc.next();
@@ -185,10 +125,112 @@ public class Main {
             }
         } while (ch < 3);
     }
+    boolean action_status = true;
+    public boolean movieSelection(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Seat Reservation------->");
+        display();
+        int ch;
+        boolean action_status = true;
+        System.out.println("1.Select movie.\n2.Exit");
+        do {
+            System.out.println("Enter access choice (1 or 2):");
+            while (!sc.hasNextInt()) {
+                System.out.println("Invalid input. Enter 1 or 2:");
+                sc.next(); // Clear invalid input
+            }
+            ch = sc.nextInt();
+        } while (ch != 1 && ch != 2 );
+        if(ch==1){
+            System.out.println("------------------------------------------------");
+            System.out.print("Select Movie using Index: ");
+            int movie_choice=sc.nextInt();
+            if (movieList.get(movie_choice).checkHouseFull()) {
+                System.out.println("Movie HouseFull");
+                action_status = false;
+            }
+            movieList.get(movie_choice).displayShowTimings();
+            System.out.println("------------------------------------------------");
+            int multiplier=action_status?1:-1;
+            return timingSelection(movie_choice, action_status);
+        }else{
+            return false;
+        }
+    }
+    public boolean timingSelection(int movie_choice,boolean action_status){
+        Scanner sc=new Scanner(System.in);
+        System.out.println("1.Want to continue?.\n2.Exit");
+        int ch;
+        do {
+            System.out.println("Enter access choice (1 or 2):");
+            while (!sc.hasNextInt()) {
+                System.out.println("Invalid input. Enter 1 or 2:");
+                sc.next(); // Clear invalid input
+            }
+            ch = sc.nextInt();
+        } while (ch != 1 && ch != 2 );
+        if(ch==1){
+            System.out.print("Choose the movie time using index: ");
+            int timingchoice = sc.nextInt();
+            movieList.get(movie_choice).showTimings.get(timingchoice).checkHouseFull();
+            movieList.get(movie_choice).showTimings.get(timingchoice).seatMatrix.showMatrix();
+            if (movieList.get(movie_choice).showTimings.get(timingchoice).seatMatrix.allBook()) {
+                System.out.println("Oops HouseFull!!\n Please Choose Another Timings");
+                action_status = false;
+
+            }
+            int multiplier=action_status?1:-1;
+            return seatSelection(movie_choice, timingchoice, action_status);
+        }else{
+            return movieSelection();
+        }
+    }
+    public boolean seatSelection(int movie_choice,int timingchoice,boolean action_status){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("------------------------------------------------");
+
+        boolean seatvalid = true;
+        String[] seats;
+
+        do{
+            seatvalid = true;
+            System.out.println("Please enter seat by comma seperated (A1,A2,A3)");
+            String seat_string = sc.next();
+            seats = seat_string.split(",");
+
+            for (String seat : seats) {
+                seatvalid = seatvalid && TimeValidator.isValidSeat(seat);
+            }
+            System.out.println(seatvalid);
+
+            if(!seatvalid) {
+                System.out.println("Re-enter the seat again (Follow format)");
+// action_status=false;
+            }
+        }while(!seatvalid);
+        return seatAvailiabilty(seats, movie_choice, timingchoice, action_status);
+    }
+    public boolean seatAvailiabilty(String[] seats,int movie_choice,int timingchoice,boolean action_status) {
+        for (int i = 0; i < seats.length; i++) {
+            int x = seats[i].charAt(0) - 'A';
+            String s1 = seats[i].substring(1);
+
+            int y = Integer.parseInt(s1) - 1;
+
+            if (movieList.get(movie_choice).showTimings.get(timingchoice).seatMatrix.isset(x, y)){
+                action_status = false;
+                System.out.println("------------------------------------------------------");
+                System.out.println("Seat "+ seats[i]+" is not available");
+                System.out.println("------------------------------------------------------");
+                return false;
+            }
+        }
+        return true;
+    }
     public static void main(String[] args) {
         Main main = new Main();
         Scanner sc = new Scanner(System.in);
-        int accesschoice;
+        int accessChoice;
         do {
             try {
                 System.out.println("PVR Ticket Booking : ");
@@ -198,21 +240,22 @@ public class Main {
                     System.out.println("Enter access choice (1 or 2):");
                     while (!sc.hasNextInt()) {
                         System.out.println("Invalid input. Enter 1 or 2:");
-                        sc.next();
+                        sc.next(); // Clear invalid input
                     }
-                    accesschoice = sc.nextInt();
-                } while (accesschoice != 1 && accesschoice != 2 );
-                switch (accesschoice) {
+                    accessChoice = sc.nextInt();
+                } while (accessChoice != 1 && accessChoice != 2 );
+                switch (accessChoice) {
                     case 1:
                         main.adminFuncion();
                         break;
                     case 2:
-                        boolean action_status = true;
-                        action_status=main.movieSelection();
+                        boolean movieStatus =main.movieSelection();
 
-                        while (action_status) {
 
-                            if (action_status) {
+
+                        /*while (movieStatus) {
+
+                            if (movieStatus) {
                                 int numseats = seats.length;
                                 System.out.println("------------------------------------------------------");
                                 System.out.println("Amount to be paid");
@@ -222,13 +265,11 @@ public class Main {
                                 int paychoice = sc.nextInt();
                                 System.out.println("------------------------------------------------------");
                                 if (paychoice == 1) {
-                                    int finalMovie_choice = movie_choice;
-                                    int finalTimingchoice = timingchoice;
                                     Arrays.stream(seats).forEach((seat) -> {
                                         int x = seat.charAt(0) - 'A';
                                         String s1 = seat.substring(1);
                                         int y = Integer.parseInt(s1) - 1;
-                                        movieList.get(finalMovie_choice).showTimings.get(finalTimingchoice).seatMatrix.setxy(x, y);
+                                        movieList.get(movie_choice).showTimings.get(timingchoice).seatMatrix.setXY(x, y);
                                     });
                                     movieList.get(movie_choice).showTimings.get(timingchoice).seatMatrix.showMatrix();
                                     System.out.println("------------------------------------------------------");
@@ -240,20 +281,20 @@ public class Main {
                                 }
                             }
                             action_status = false;
-                        }
+                        }*/
                         break;
                 }
             }catch (InputMismatchException e) {
                 System.out.println("Invalid input format. Please enter a valid choice (1 or 2).");
                 sc.nextLine(); // Clear scanner buffer
-                accesschoice = 0;
+                accessChoice = 0;
             } catch (IllegalArgumentException e) {
                 System.out.println("Error: " + e.getMessage());
-                accesschoice = 0; // Reset accessChoice to re-enter loop
+                accessChoice = 0; // Reset accessChoice to re-enter loop
             } catch (Exception e) {
                 System.out.println(" You have chose unavailable index. Please Start again");
-                accesschoice = 0;
+                accessChoice = 0;
             }
-        } while(accesschoice<3);
+        } while(accessChoice<3);
     }
 }
