@@ -132,6 +132,7 @@ public class Main {
         display();
         int ch;
         boolean action_status = true;
+        System.out.println("Select option 1 for NEXT and 2 for BACK");
         System.out.println("1.Select movie.\n2.Exit");
         do {
             System.out.println("Enter access choice (1 or 2):");
@@ -143,13 +144,15 @@ public class Main {
         } while (ch != 1 && ch != 2 );
         if(ch==1){
             System.out.println("------------------------------------------------");
-            System.out.print("Select Movie using Index: ");
+//            System.out.print("Select Movie using Index: \n ");
+            display();
+            System.out.print("Select Movie using Index: \n ");
             int movie_choice=sc.nextInt();
             if (movieList.get(movie_choice).checkHouseFull()) {
                 System.out.println("Movie HouseFull");
                 action_status = false;
             }
-            movieList.get(movie_choice).displayShowTimings();
+//            movieList.get(movie_choice).displayShowTimings();
             System.out.println("------------------------------------------------");
             int multiplier=action_status?1:-1;
             return timingSelection(movie_choice, action_status);
@@ -159,10 +162,12 @@ public class Main {
     }
     public boolean timingSelection(int movie_choice,boolean action_status){
         Scanner sc=new Scanner(System.in);
-        System.out.println("1.Want to continue?.\n2.Exit");
+        movieList.get(movie_choice).displayShowTimings();
+        System.out.println("1.Do you want to continue?.\n2.Back");
         int ch;
         do {
             System.out.println("Enter access choice (1 or 2):");
+      //      movieList.get(movie_choice).displayShowTimings();
             while (!sc.hasNextInt()) {
                 System.out.println("Invalid input. Enter 1 or 2:");
                 sc.next(); // Clear invalid input
@@ -187,28 +192,41 @@ public class Main {
     }
     public boolean seatSelection(int movie_choice,int timingchoice,boolean action_status){
         Scanner sc = new Scanner(System.in);
-        System.out.println("------------------------------------------------");
-
-        boolean seatvalid = true;
-        String[] seats;
-
-        do{
-            seatvalid = true;
-            System.out.println("Please enter seat by comma seperated (A1,A2,A3)");
-            String seat_string = sc.next();
-            seats = seat_string.split(",");
-
-            for (String seat : seats) {
-                seatvalid = seatvalid && TimeValidator.isValidSeat(seat);
+//        System.out.println("------------------------------------------------");
+        System.out.println("1.Do you want to continue?.\n2.Back");
+        int ch;
+        do {
+            System.out.println("Enter access choice (1 or 2):");
+            while (!sc.hasNextInt()) {
+                System.out.println("Invalid input. Enter 1 or 2:");
+                sc.next(); // Clear invalid input
             }
-            System.out.println(seatvalid);
+            ch = sc.nextInt();
+        } while (ch != 1 && ch != 2 );
+        if(ch==1) {
+            boolean seatvalid = true;
+            String[] seats;
 
-            if(!seatvalid) {
-                System.out.println("Re-enter the seat again (Follow format)");
+            do {
+                seatvalid = true;
+                System.out.println("Please enter seat by comma seperated (A1,A2,A3)");
+                String seat_string = sc.next();
+                seats = seat_string.split(",");
+
+                for (String seat : seats) {
+                    seatvalid = seatvalid && TimeValidator.isValidSeat(seat);
+                }
+                System.out.println(seatvalid);
+
+                if (!seatvalid) {
+                    System.out.println("Re-enter the seat again (Follow format)");
 // action_status=false;
-            }
-        }while(!seatvalid);
-        return seatAvailiabilty(seats, movie_choice, timingchoice, action_status);
+                }
+            } while (!seatvalid);
+            return seatAvailiabilty(seats, movie_choice, timingchoice, action_status);
+        }else{
+                return timingSelection(movie_choice,action_status);
+        }
     }
     public boolean seatAvailiabilty(String[] seats,int movie_choice,int timingchoice,boolean action_status) {
         for (int i = 0; i < seats.length; i++) {
@@ -253,7 +271,7 @@ public class Main {
 
 
 
-                        /*while (movieStatus) {
+                        /* while (movieStatus) {
 
                             if (movieStatus) {
                                 int numseats = seats.length;
